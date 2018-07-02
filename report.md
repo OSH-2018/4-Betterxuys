@@ -1,4 +1,4 @@
-#lab4实验报告
+# lab4实验报告
 
 代码引用自[paboldin/meltdown-exploit@github](https://github.com/paboldin/meltdown-exploit) 
 
@@ -7,12 +7,12 @@
 	make
 	./run.sh
 
-##测试环境
+## 测试环境
 
 ubuntu 16.04 LTS，内核版本4.4.0-128-generic
 关闭meltdown补丁，具体方法见下文
 
-##实验原理
+## 实验原理
 
 由于乱序执行，CPU提前执行了后续的非法指令，在检测到应用程序访问了非法地址之前，来不及清除所有信息，利用这个窗口期可以建立侧信道攻击。
 侧信道攻击是指不去攻击信道本身来获得信息，而是通过观信道双方通信时产生的其他影响，通过分析泄露的额外信息来建立映射，进而取得信息。
@@ -32,7 +32,7 @@ ubuntu 16.04 LTS，内核版本4.4.0-128-generic
 输出应该是这样的
 		/sys/devices/system/cpu/vulnerabilities/meltdown:Vulnerable
 
-###二. 程序攻击流程
+### 二. 程序攻击流程
 
 1. 运行./run.sh，首先在/proc/kallsyms中找到linux_proc_banner的地址，将linux_proc_banner的地址和希望读取的地址长度（十六进制）作为参数传给攻击程序meltdown
 
@@ -58,7 +58,7 @@ check()函数检查target_array数组里每个值的提取时间，如果时间�
 将上述重复1000次即得到了一个字节的猜测结果
 本次试验读取了16个地址的内容
 
-##其余部分代码解读
+## 其余部分代码解读
 
 1. 头文件rdtscp.h中包含一个计算访问时间的函数
 
@@ -79,11 +79,11 @@ check()函数检查target_array数组里每个值的提取时间，如果时间�
 2. volatile会让编译器不优化代码
 
 
-##预期结果
+## 预期结果
 
 如图所示
 ![result](pictures/result.png  "result")
 
-##特别感谢
+## 特别感谢
 
 特别感谢李子天助教解决Linux和NVIDIA之间的爱恨情仇

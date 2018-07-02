@@ -1,4 +1,5 @@
 #lab4实验报告
+
 代码来引用自[paboldin/meltdown-exploit@github](https://github.com/paboldin/meltdown-exploit) 
 
 可直接通过一下命令运行程序
@@ -7,18 +8,22 @@
 	./run.sh
 
 ##测试环境
+
 ubuntu 16.04 LTS，内核版本4.4.0-128-generic
 关闭meltdown补丁，具体方法见下文
 
 ##实验原理
+
 由于乱序执行，CPU提前执行了后续的非法指令，在检测到应用程序访问了非法地址之前，来不及清除所有信息，利用这个窗口期可以建立侧信道攻击。
 侧信道攻击是指不去攻击信道本身来获得信息，而是通过观信道双方通信时产生的其他影响，通过分析泄露的额外信息来建立映射，进而取得信息。
  本实验利用指令流水中指令超前执行，在被超前执行的代码中故意去访问非授权地址a，a的内容被送入寄存器中参与临时运算，尝试以a的内容做地址去访问某块内存，导致该地址内容被cache；一个周期结束时，被检测出非法指令，所有数据被清除，但是cache中并未擦除；此时对整个内存进行扫描，测试访问速度，地址x访问时间极短说明该地址被cache，进而推断出a地址中的内容为x。
  基于此方法，我们可以得到任意内存块中的内容，读取内核数据，其他程序，其他用户数据。
  
 ## 攻击步骤
+
 ###一. [首先关闭系统的meltdown补丁](https://community.spiceworks.com/topic/2108250-meltdown-patch-disable-fedora-27) 
 打开/etc/default/grub在其中GRUB_CMDLINE_LINUX的值加上"nopti"
+
 运行命令
 		
 		grub-mkconfig -o /boot/grub/grub.cfg
@@ -42,6 +47,7 @@ ubuntu 16.04 LTS，内核版本4.4.0-128-generic
 		static char expected[] = "%s version %s";
 
 4. 全局数组target_array[256*4096]，用于观察哪个地址读取时间，根据较快的读取时间确认攻击地址的值
+
 **为什么是4096？**
 intel官方手册中提到，cpu一次只会缓存一页内容，一页大小为4096
 
@@ -74,7 +80,10 @@ check()函数检查target_array数组里每个值的提取时间，如果时间�
 
 
 ##预期结果
+
 如图所示
 ![result](pictures/result.png  "result")
+
 ##特别感谢
+
 特别感谢李子天助教解决Linux和NVIDIA之间的爱恨情仇
